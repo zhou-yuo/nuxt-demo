@@ -1,0 +1,11 @@
+@use '~/assets/css/_colors.scss' as colors;
+
+.app-alert {
+  background-color: colors.$secondary-color;
+  border: 1px solid;
+  border-color: colors.$border-color;
+  border-radius: 4px;
+  color: colors.$primary-color;
+  padding: 12px 16px;
+  font-size: 14px;
+}
