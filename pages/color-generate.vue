@@ -14,10 +14,22 @@
         </div>
         <transition name="fade">
           <div v-if="copiedColor === item" class="copied-feedback">
-            已复制
+            copied
           </div>
         </transition>
       </div>
+    </div>
+
+    <div class="mode-selector">
+      <label>
+        <input type="radio" name="mode" value="light" checked @change="modeChange($event)" />
+        <span>light</span>
+      </label>
+
+      <label>
+        <input type="radio" name="mode" value="dark" @change="modeChange($event)" />
+        <span>dark</span>
+      </label>
     </div>
 
     <div class="color-picker-container"></div>
@@ -101,7 +113,7 @@ const initColorPicker = async () => {
         // cmyk: true, // 如果不需要显示 CMYK，可以设置为 false
         input: true, // 显示所有颜色格式的输入框 (取决于 hex, rgba, hsla, hsva, cmyk 的设置)
         clear: false, // 不显示清除按钮
-        save: true // 显示保存按钮
+        save: false // 显示保存按钮
       }
     },
     i18n: {
@@ -115,15 +127,12 @@ const initColorPicker = async () => {
     }
   });
 
-  // 监听颜色保存事件 (用户点击保存按钮时触发)
-  pickrInstance.on("save", (color, instance) => {
+  // 监听颜色变化事件 (用户拖动滑块时触发)
+  pickrInstance.on("change", (color, source, instance) => {
     if(color !== null) {
       const hexColor = color.toHEXA().toString(); // 获取 Hex 格式颜色
       generateColor(hexColor); // 调用生成颜色函数
     }
-    
-    // 如果你希望在保存后隐藏选择器，可以调用 pickr.hide();
-    pickrInstance.hide();
   });
 
   // 监听颜色选择器初始化事件，确保初始颜色显示正确
@@ -132,8 +141,6 @@ const initColorPicker = async () => {
     generateColor(initialColor); // 调用生成颜色函数
   });
 }
-
-
 
 onMounted(() => {
   initModule();
@@ -144,17 +151,17 @@ const generateColor = (hexColor = '') => {
     if (!hexColor || !generateAntdColors) { // 检查 generateAntdColors 是否已加载
       return;
     }
+    const mode = document.querySelector('input[name="mode"]:checked').value; // 获取选中的模式
+    console.log("🚀 ~ generateColor ~ mode:", mode)
     const colors = generateAntdColors(hexColor, { // 使用赋值后的变量
-      theme: 'light',
-      backgroundColor: '#ffffff',
+      theme: mode,
+      backgroundColor: mode === 'dark' ? '#000000' : '#ffffff',
     });
     paletteColors.value = colors;
   } catch (error) {
     console.error("Error generating color:", error);
   }
 }
-
-
 
 const copiedColor = ref(null); // 用于存储最近复制的颜色，以便显示反馈
 
@@ -184,12 +191,20 @@ const copyToClipboard = (text) => {
   }
 };
 
+const modeChange = (event) => {
+  const color = pickrInstance._color; // 获取当前颜色对象
+  if(color !== null) {
+    const hexColor = color.toHEXA().toString(); // 获取 Hex 格式颜色
+    generateColor(hexColor); // 调用生成颜色函数
+  }
+};
+
 </script>
 
 <style lang="scss">
 $colorItemSize: 80px; // 定义颜色块的大小
 .colors {
-  margin-bottom: 30px;
+  margin: 30px 0;
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
@@ -216,6 +231,13 @@ $colorItemSize: 80px; // 定义颜色块的大小
     color: #333;
     text-align: center;
   }
+}
+
+.mode-selector {
+  margin: 30px 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .copied-feedback {
