@@ -1,6 +1,6 @@
 export const useAuthStore = defineStore('authStore', {
   state: () => ({
-    token: ''
+    token: null as String | null
   }),
   getters: {
     isLogin(state) {
@@ -8,11 +8,11 @@ export const useAuthStore = defineStore('authStore', {
     }
   },
   actions: {
-    setToken(val = '') {
+    setToken(val = null) {
       this.token = val;
     },
     removeToken() {
-      this.token = '';
+      this.token = null;
     }
   },
   persist: true,

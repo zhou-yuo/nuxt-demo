@@ -19,6 +19,7 @@ const menu = reactive([
   { path: '/posts/1', name: 'Posts1' },
   { path: '/posts/2', name: 'Posts2' },
   { path: '/login', name: 'Logout' },
+  { path: '/color-generate', name: 'Color Generate' },
 ])
 
 </script>
